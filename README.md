@@ -1,4 +1,4 @@
-# Terrific - AI-Powered Infrastructure Code Generator
+## Terrific - AI-Powered Infrastructure Code Generator
 <p align="center">
 <img src="./public/assets/android-chrome-512x512.png" alt="Terrific Logo" width="120">
 </p>
@@ -11,22 +11,23 @@ Terrific is a full-stack web application designed to streamline the DevOps workf
 
 The application features a secure authentication system, allowing users to sign up, log in, and manage their work in a protected environment.
 
-✨ Features
+### ✨ Features
 Secure User Authentication: Full sign-up and sign-in functionality powered by AWS Cognito, including social sign-in with Google.
 
 AI Code Generation: Describe infrastructure requirements in natural language (e.g., "Create a secure S3 bucket") and receive ready-to-use Terraform code.
 
-AI Code Analysis:
+#### AI Code Analysis:
 
-Explain Code: Get a detailed, line-by-line explanation of what a piece of Terraform code does.
+##### Explain Code: 
+    Get a detailed, line-by-line explanation of what a piece of Terraform code does.
 
-Suggest Improvements: Receive AI-powered suggestions on how to improve the security, performance, or syntax of your code.
+##### Suggest Improvements: Receive AI-powered suggestions on how to improve the security, performance, or syntax of your code.
 
-Responsive UI: A clean, modern, and dark-mode interface built with React and Tailwind CSS.
+##### Responsive UI: A clean, modern, and dark-mode interface built with React and Tailwind CSS.
 
-Protected API: The backend API is secured, ensuring only authenticated users can access the AI generation services.
+##### Protected API: The backend API is secured, ensuring only authenticated users can access the AI generation services.
 
-🛠️ Tech Stack
+### 🛠️ Tech Stack
 This project is built with a modern, full-stack JavaScript architecture.
 
 Frontend:
@@ -53,7 +54,7 @@ Authentication:
 
 Service: AWS Cognito
 
-🚀 Getting Started
+### 🚀 Getting Started
 Follow these instructions to get a copy of the project up and running on your local machine for development and testing purposes.
 
 Prerequisites
@@ -127,6 +128,7 @@ Your application should now be running. Open your browser to the local address p
 📁 Project Structure
 /
 ├── public/           # Static assets like favicons
+│   └── assets/       # Image assets for the app
 ├── src/
 │   ├── components/   # Reusable UI components (if any)
 │   ├── pages/        # Main page components (LandingPage, GeneratorPage)
