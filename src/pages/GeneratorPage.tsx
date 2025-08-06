@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { useEffect, useState } from 'react';
-import { withAuthenticator, Button, Heading, Flex, WithAuthenticatorProps } from '@aws-amplify/ui-react';
+import React, { useState, useEffect } from 'react';
+import { withAuthenticator, Button, WithAuthenticatorProps } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
 import { fetchAuthSession, fetchUserAttributes } from 'aws-amplify/auth';
 
@@ -10,7 +10,7 @@ interface CodeDisplayProps {
 }
 type AnalysisMode = 'explain' | 'suggest';
 
-// --- Helper Components (moved outside the main component for cleanliness) ---
+// --- Helper Components ---
 const Spinner: React.FC = () => (
   <div className="flex justify-center items-center">
     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
@@ -23,60 +23,62 @@ const CodeDisplay: React.FC<CodeDisplayProps> = ({ code }) => (
   </pre>
 );
 
+// --- Configuration for the Sign-Up Form ---
 const formFields = {
   signUp: {
-    email: {
-        label: 'Email Address',
-        Placeholder: "Enter your email address",
-        order: 1
-    },
     name: {
       label: 'Full Name',
-      Placeholder: "Enter your full name",
-      order: 0
+      placeholder: 'Enter your full name',
+      isRequired: true,
+      order: 1,
+    },
+    email: {
+      order: 2,
     },
     password: {
-      order: 2
+      order: 3,
     },
     confirm_password: {
-      order: 3
+      order: 4,
     },
-    username: {
-        label: 'Username',
-        Placeholder: "Enter your username",
-        order: 4,
-        isRequired: false, // Ensure username is required
-        display: 'none'
-        }
   },
 };
 
-// --- Main App Component ---
+// --- Main Page Component ---
 const GeneratorPage = ({ signOut, user }: WithAuthenticatorProps) => {
+  const [displayName, setDisplayName] = useState('');
   const [prompt, setPrompt] = useState<string>('');
   const [generatedCode, setGeneratedCode] = useState<string>('');
   const [analysis, setAnalysis] = useState<string>('');
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [displayName, setDisplayName] = useState('');
 
-  // Use a relative path for the backend API URL
-  const backendUrl: string = '/api/generate'; 
+  useEffect(() => {
+    const fetchName = async () => {
+      try {
+        const attributes = await fetchUserAttributes();
+        setDisplayName(attributes.name || user?.username || '');
+      } catch (error) {
+        console.error("Error fetching user attributes:", error);
+        setDisplayName(user?.username || '');
+      }
+    };
+    if (user) {
+      fetchName();
+    }
+  }, [user]);
 
-  // Function to call our backend API
   const callBackendAPI = async (requestPrompt: string, mode: 'generate' | AnalysisMode): Promise<string> => {
     try {
-      // *** MODIFIED: Get the authentication token ***
       const { tokens } = await fetchAuthSession();
       const token = tokens?.idToken?.toString();
       if (!token) throw new Error("Authentication token not found.");
 
-      const response = await fetch(backendUrl, {
+      const response = await fetch('/api/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // *** MODIFIED: Add the token to the request headers ***
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({ prompt: requestPrompt, mode: mode }),
@@ -88,31 +90,13 @@ const GeneratorPage = ({ signOut, user }: WithAuthenticatorProps) => {
       }
 
       const result = await response.json();
-      return result.generatedText || result.text; // Accommodate different backend responses
-
-    } catch (err: unknown) {
+      return result.generatedText || result.text;
+    } catch (err) {
       console.error(err);
       throw err;
     }
   };
-  
-  useEffect(() => {
-    const fetchName = async () => {
-      try {
-        const attributes = await fetchUserAttributes();
-        setDisplayName(attributes.name || user?.username || '');  // Use name, fallback to username
-      } catch (error) {
-        console.error("Error fetching user attributes:", error);
-        setDisplayName(user?.username || ''); // Fallback on error
-      }
-    };
 
-    if (user) {
-      fetchName();
-    }
-  }, [user]);
-
-  // --- Event Handlers ---
   const handleGenerateCode = async (): Promise<void> => {
     if (!prompt.trim()) {
       setError('Please enter a description.');
@@ -127,11 +111,11 @@ const GeneratorPage = ({ signOut, user }: WithAuthenticatorProps) => {
       const code = await callBackendAPI(prompt, 'generate');
       setGeneratedCode(code);
     } catch (err: unknown) {
-        if (err instanceof Error) {
-            setError(err.message);
-        } else {
-            setError('An unknown error occurred.');
-        }
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unknown error occurred.');
+      }
     } finally {
       setIsGenerating(false);
     }
@@ -147,11 +131,11 @@ const GeneratorPage = ({ signOut, user }: WithAuthenticatorProps) => {
       const result = await callBackendAPI(generatedCode, mode);
       setAnalysis(result);
     } catch (err: unknown) {
-        if (err instanceof Error) {
-            setError(err.message);
-        } else {
-            setError('An unknown error occurred during analysis.');
-        }
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unknown error occurred during analysis.');
+      }
     } finally {
       setIsAnalyzing(false);
     }
@@ -160,10 +144,9 @@ const GeneratorPage = ({ signOut, user }: WithAuthenticatorProps) => {
   const handleCopyToClipboard = (): void => {
     if (!generatedCode) return;
     navigator.clipboard.writeText(generatedCode).then(() => {
-        // Simple alert for notification, can be replaced with a more elegant UI
-        alert("Copied to clipboard!");
+      alert("Copied to clipboard!");
     }).catch(err => {
-        console.error('Failed to copy text: ', err);
+      console.error('Failed to copy text: ', err);
     });
   };
 
@@ -174,14 +157,18 @@ const GeneratorPage = ({ signOut, user }: WithAuthenticatorProps) => {
   return (
     <div className="bg-gray-900 min-h-screen min-w-screen flex flex-col items-center text-white font-sans p-4 sm:p-6 lg:p-8">
       <div className="w-full max-w-4xl">
-        {/* Header from authentication flow */}
-        <Flex as="header" justifyContent="space-between" alignItems="center" marginBottom="2rem">
-            <Heading level={2} className="text-indigo-400">Terrific</Heading>
-            <Flex alignItems="center">
-                <p style={{marginRight: '1rem'}}>Hello, {displayName}</p>
-                <Button onClick={signOut} variation="primary" size="small">Sign Out</Button>
-            </Flex>
-        </Flex>
+        <header className="w-full grid grid-cols-3 items-center mb-4 pt-15">
+          <div></div>
+          <div className="text-center">
+            <h1 className="text-4xl sm:text-5xl font-bold text-indigo-400">Terrific</h1>
+          </div>
+          <div className="absolute top-4 right-4 sm:top-6 sm:right-6 flex items-center gap-4 z-10">
+              <span className="text-gray-300 hidden sm:block">Hello, {displayName}</span>
+              <Button onClick={signOut} variation="primary" size="small">Sign Out</Button>
+          </div>
+        </header>
+        <p className="text-gray-400 text-center mb-8">Generate, explain, and improve Terraform code with AI.</p>
+
         <div className="bg-gray-800 p-6 rounded-xl shadow-lg bg-center">
           <label htmlFor="prompt-input" className="block text-lg font-medium text-gray-300 mb-2">
             Describe your infrastructure:
@@ -235,14 +222,14 @@ const GeneratorPage = ({ signOut, user }: WithAuthenticatorProps) => {
         )}
 
         {(isAnalyzing || analysis) && (
-            <div className="mt-8 bg-gray-800 p-6 rounded-xl shadow-lg">
-                <h2 className="text-2xl font-semibold text-gray-300 mb-4">AI Analysis</h2>
-                {isAnalyzing ? (
-                    <div className="flex justify-center items-center h-24"><Spinner /></div>
-                ) : (
-                    <div className="text-gray-300 whitespace-pre-wrap">{analysis}</div>
-                )}
-            </div>
+          <div className="mt-8 bg-gray-800 p-6 rounded-xl shadow-lg">
+            <h2 className="text-2xl font-semibold text-gray-300 mb-4">AI Analysis</h2>
+            {isAnalyzing ? (
+              <div className="flex justify-center items-center h-24"><Spinner /></div>
+            ) : (
+              <div className="text-gray-300 whitespace-pre-wrap">{analysis}</div>
+            )}
+          </div>
         )}
       </div>
     </div>
@@ -251,6 +238,6 @@ const GeneratorPage = ({ signOut, user }: WithAuthenticatorProps) => {
 
 export default withAuthenticator(GeneratorPage, {
   formFields,
-  loginMechanisms: ['email'],    
-  signUpAttributes: ['name'],    
+  loginMechanisms: ['email'],
+  signUpAttributes: ['name'],
 });
