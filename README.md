@@ -120,7 +120,7 @@ Follow these instructions to get a copy of the project up and running on your lo
 
     Your application should now be running. Open your browser to the local address provided by the `npm run dev` command (usually `http://localhost:5173`).
 
-## 📁 Project Structure
+📁 Project Structure
 /
 ├── public/           # Static assets like favicons
 │   └── assets/       # Image assets for the app
@@ -135,8 +135,7 @@ Follow these instructions to get a copy of the project up and running on your lo
 ├── package.json      # Project dependencies and scripts
 └── README.md         # This file
 
-## ☁️ Deployment
-
+☁️ Deployment
 This application is ready for deployment to platforms like Vercel, Render, or AWS Amplify Hosting.
 
 When deploying, you do not upload the `.env` file. Instead, you must configure the environment variables directly in your hosting provider's dashboard. Ensure you set all four variables (`GEMINI_API_KEY`, `AWS_COGNITO_USER_POOL_ID`, `VITE_AWS_COGNITO_USER_POOL_ID`, and `VITE_AWS_COGNITO_APP_CLIENT_ID`) in the deployment environment settings.
