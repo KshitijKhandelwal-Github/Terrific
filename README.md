@@ -143,4 +143,4 @@ When deploying, you do not upload the `.env` file. Instead, you must configure t
 
 ---
 
-*This project was created by Kshitij Khandelwal.*
+*This project was created by [Kshitij Khandelwal](https://github.com/KshitijKhandelwal-Github).*
