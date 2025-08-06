@@ -1,4 +1,4 @@
-#Terrific - AI-Powered Infrastructure Code Generator
+# Terrific - AI-Powered Infrastructure Code Generator
 <p align="center">
 <img src="./public/assets/android-chrome-512x512.png" alt="Terrific Logo" width="120">
 </p>
