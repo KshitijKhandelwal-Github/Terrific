@@ -1,6 +1,6 @@
 #Terrific - AI-Powered Infrastructure Code Generator
 <p align="center">
-<img src="/Users/kshitijkhandelwal_1/VSCode/Terrific/terrific-app/src/assets/android-chrome-512x512.png" alt="Terrific Logo" width="120">
+<img src="./public/assets/android-chrome-512x512.png" alt="Terrific Logo" width="120">
 </p>
 
 <p align="center">
