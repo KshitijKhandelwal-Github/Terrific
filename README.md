@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <strong>Generate, explain, and improve Terraform code with the power of AI.</strong>
+<strong>Generate, explain, and improve Terraform code with the power of AI.</strong>
 </p>
 
 ---
