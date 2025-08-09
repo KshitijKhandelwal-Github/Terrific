@@ -1,90 +1,75 @@
-// Import necessary types and packages
-import express, { type Express, type Request, type Response } from 'express';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import express, { Express, Request, Response } from 'express';
+import { GoogleGenerativeAI, Content } from '@google/generative-ai';
 import cors from 'cors';
 import dotenv from 'dotenv';
-// Load environment variables from .env file
+
 dotenv.config();
 
-// --- Basic Setup ---
 const app: Express = express();
-const port: number = 3001; // Port for the backend server
+const port: number = 3001;
 
-// --- Middleware ---
-// Enable CORS (Cross-Origin Resource Sharing) to allow requests from your frontend
 app.use(cors());
-// Enable Express to parse JSON request bodies
 app.use(express.json());
 
-// --- Gemini API Initialization ---
-// Make sure your GEMINI_API_KEY is set in your .env file
 if (!process.env.GEMINI_API_KEY) {
   throw new Error("GEMINI_API_KEY is not set in the .env file.");
 }
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-preview-05-20" });
 
-// --- Type Definition for Request Body ---
-interface GenerateRequestBody {
-  prompt: string;
-  mode: 'generate' | 'explain' | 'suggest';
+interface Message {
+  sender: 'user' | 'ai';
+  text: string;
 }
 
-// --- API Endpoint ---
-app.post('/api/generate', async (
-  req: Request<Record<string, never>, Record<string, never>, GenerateRequestBody>, 
-  res: Response
-) => {
+interface GenerateRequestBody {
+  history: Message[];
+}
+
+app.post('/api/generate', async (req: Request<{}, {}, GenerateRequestBody>, res: Response) => {
   try {
-    // Get the prompt and mode from the request body sent by the frontend
-    const { prompt, mode } = req.body;
+    const { history } = req.body;
 
-    if (!prompt) {
-      return res.status(400).json({ error: 'Prompt is required.' });
+    if (!history || history.length === 0) {
+      return res.status(400).json({ error: 'Conversation history is required.' });
     }
 
-    let fullPrompt: string = '';
+    const systemInstruction = {
+        role: "system",
+        parts: [{ text: `You are an expert in Terraform and Infrastructure as Code. 
+        Your task is to generate and iteratively update Terraform HCL code based on the user's conversation.
+        When generating code, only output the raw code block, without any explanation, comments, or markdown formatting.
+        If the user asks for an explanation or a change, respond naturally, but always provide the complete, updated code block in your final response.`}]
+    };
 
-    // Create the appropriate prompt for Gemini based on the mode
-    if (mode === 'generate') {
-      fullPrompt = `
-        You are an expert in Terraform and Infrastructure as Code.
-        Your task is to generate valid Terraform HCL code based on the user's request.
-        Only output the raw code block, without any explanation, comments, or markdown formatting like \`\`\`hcl.
-        User request: "${prompt}"
-      `;
-    } else if (mode === 'explain') {
-      fullPrompt = `
-        You are a helpful assistant who explains technical concepts simply.
-        Explain the following Terraform code block. Describe what each resource does and what the overall configuration achieves. Format the output clearly.
-        Terraform Code:\n---\n${prompt}\n---
-      `;
-    } else if (mode === 'suggest') {
-      fullPrompt = `
-        You are a DevOps security and performance expert.
-        Review this Terraform code and suggest improvements for security, cost-effectiveness, and performance.
-        Provide actionable feedback in a structured list. If the code is already good, state that and explain why.
-        Terraform Code:\n---\n${prompt}\n---
-      `;
-    } else {
-      return res.status(400).json({ error: 'Invalid mode specified.' });
-    }
+    // Correctly map the message history to the format expected by the Gemini API
+    const geminiHistory: Content[] = history.map(msg => ({
+      role: msg.sender === 'user' ? 'user' : 'model',
+      parts: [{ text: msg.text }]
+    }));
 
-    // Call the Gemini API
-    const result = await model.generateContent(fullPrompt);
+    const chat = model.startChat({
+      // The history should be an array of Content objects
+      history: geminiHistory.slice(0, -1), // All but the last message
+      systemInstruction: systemInstruction,
+      generationConfig: {
+        maxOutputTokens: 2048,
+      },
+    });
+
+    const lastMessage = history[history.length - 1].text;
+    const result = await chat.sendMessage(lastMessage);
     const response = await result.response;
     const text = response.text().replace(/```hcl\n|```terraform\n|```/g, '').trim();
 
-    // Send the generated text back to the frontend
     res.json({ text });
 
   } catch (error) {
     console.error('Error calling Gemini API:', error);
-    res.status(500).json({ error: 'Failed to generate content from AI. Please check the backend server logs.' });
+    res.status(500).json({ error: 'Failed to generate content from AI.' });
   }
 });
 
-// --- Start the Server ---
 app.listen(port, () => {
   console.log(`Backend server listening at http://localhost:${port}`);
 });
