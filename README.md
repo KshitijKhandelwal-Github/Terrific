@@ -5,122 +5,125 @@
 </p>
 
 <p align="center">
-<strong>Generate, explain, and improve Terraform code with the power of AI.</strong>
+<strong>Generate Terraform code with the power of AI</strong>
+</p>
+
+<p align="center">
+  <a href="https://terrific-app.vercel.app" target="_blank">🚀 Live Demo</a>
 </p>
 
 ---
 
-Terrific is a full-stack web application designed to streamline the DevOps workflow by leveraging AI. Users can describe their desired cloud infrastructure in plain English, and Terrific will generate the corresponding Terraform code. The app also provides AI-driven explanations and suggestions for improving existing code.
+## About Terrific
 
-The application features a secure authentication system, allowing users to sign up, log in, and manage their work in a protected environment.
+Terrific is an AI-powered web application that transforms natural language descriptions into production-ready Terraform code. Simply describe your cloud infrastructure needs in plain English, and Terrific generates the corresponding Infrastructure as Code (IaC) using Google's Gemini AI.
 
-## ✨ Features
+**Key Features:**
 
-* **Secure User Authentication:** Full sign-up and sign-in functionality powered by AWS Cognito, including social sign-in with Google.
-* **AI Code Generation:** Describe infrastructure requirements in natural language (e.g., "Create a secure S3 bucket") and receive ready-to-use Terraform code.
-* **AI Code Analysis:**
-    * **Explain Code:** Get a detailed, line-by-line explanation of what a piece of Terraform code does.
-    * **Suggest Improvements:** Receive AI-powered suggestions on how to improve the security, performance, or syntax of your code.
-* **Responsive UI:** A clean, modern, and dark-mode interface built with React and Tailwind CSS.
-* **Protected API:** The backend API is secured, ensuring only authenticated users can access the AI generation services.
+- 🤖 **AI Code Generation** - Convert natural language to Terraform HCL
+- 🔐 **Secure Authentication** - AWS Cognito with social sign-in
+- 💬 **Conversational Interface** - Iterative code refinement through chat
+- 📋 **One-Click Copy** - Easy code copying with visual feedback
+- 🎨 **Modern UI** - Clean, responsive design with dark mode
 
-## 🛠️ Tech Stack
+**Try it live:** [terrific-app.vercel.app](https://terrific-app.vercel.app)
 
-This project is built with a modern, full-stack JavaScript architecture.
+## How It Works
 
-* **Frontend:**
-    * **Framework:** [React](https://reactjs.org/)
-    * **Build Tool:** [Vite](https://vitejs.dev/)
-    * **Language:** [TypeScript](https://www.typescriptlang.org/)
-    * **Styling:** [Tailwind CSS](https://tailwindcss.com/)
-    * **Authentication UI:** [AWS Amplify UI for React](https://ui.docs.amplify.aws/)
+1. **Sign In** - Authenticate securely with AWS Cognito
+2. **Describe** - Tell Terrific what infrastructure you need in natural language
+3. **Generate** - Get instant Terraform code powered by Google Gemini AI
+4. **Iterate** - Refine and modify through conversational prompts
+5. **Deploy** - Copy the generated code and use it in your projects
 
-* **Backend:**
-    * **Runtime:** [Node.js](https://nodejs.org/)
-    * **Framework:** [Express.js](https://expressjs.com/)
-    * **AI Service:** [Google Gemini API](https://ai.google.dev/)
+## Example Usage
 
-* **Authentication:**
-    * **Service:** [AWS Cognito](https://aws.amazon.com/cognito/)
+```
+User: "Create an S3 bucket with versioning enabled"
 
-## 🚀 Getting Started
+Terrific: Generates complete Terraform configuration with:
+- S3 bucket resource
+- Versioning configuration
+- Best practice settings
+```
 
-Follow these instructions to get a copy of the project up and running on your local machine for development and testing purposes.
+---
 
-### Prerequisites
+## Technical Details
 
-* [Node.js](https://nodejs.org/) (version 18 or later)
-* [Git](https://git-scm.com/)
-* An [AWS Account](https://aws.amazon.com/)
-* A [Google Cloud Platform Account](https://cloud.google.com/) (for the Gemini API key)
+### Architecture
 
-### Installation & Setup
+- **Frontend**: React + TypeScript + Vite + Tailwind CSS
+- **Backend**: Node.js + Express.js
+- **AI**: Google Gemini 2.5 Flash API
+- **Authentication**: AWS Cognito
+- **Deployment**: Vercel
 
-1.  **Clone the repository:**
-    ```bash
-    git clone [https://github.com/KshitijKhandelwal-Github/Terrific.git](https://github.com/KshitijKhandelwal-Github/Terrific.git)
-    ```
+### Tech Stack
 
-2.  **Navigate into the project directory:**
-    ```bash
-    cd Terrific
-    ```
+- **Framework**: [React](https://reactjs.org/) with [TypeScript](https://www.typescriptlang.org/)
+- **Build Tool**: [Vite](https://vitejs.dev/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Authentication**: [AWS Amplify UI](https://ui.docs.amplify.aws/) + [AWS Cognito](https://aws.amazon.com/cognito/)
+- **AI Service**: [Google Gemini API](https://ai.google.dev/)
+- **Backend**: [Express.js](https://expressjs.com/)
 
-3.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
+## 🚀 Live Application
 
-4.  **Set up Environment Variables:**
+The application is deployed and ready to use at [terrific-app.vercel.app](https://terrific-app.vercel.app).
 
-    This project requires several secret keys and public identifiers to connect to the backend services.
+All environment variables and API keys are configured on Vercel for seamless operation.
 
-    * Create a `.env` file by making a copy of the example file:
-        ```bash
-        cp .env.example .env
-        ```
-    * Now, open the newly created `.env` file and fill in the values:
+### Local Development
 
-        #### **Google Gemini API Key**
+For local development, you can clone and run the project:
 
-        * `GEMINI_API_KEY`: Get your key from [Google AI Studio](https://aistudio.google.com/app/apikey).
+1. **Clone the repository:**
 
-        #### **AWS Cognito Variables**
+   ```bash
+   git clone https://github.com/KshitijKhandelwal-Github/Terrific.git
+   cd Terrific
+   ```
 
-        You will need to create an **AWS Cognito User Pool** and an **App Client**. Follow the project's setup guide or the official AWS documentation.
+2. **Install dependencies:**
 
-        * `AWS_COGNITO_USER_POOL_ID`: The ID of your Cognito User Pool (used by the backend).
-        * `VITE_AWS_COGNITO_USER_POOL_ID`: The same ID, but prefixed with `VITE_` for frontend access.
-        * `VITE_AWS_COGNITO_APP_CLIENT_ID`: The ID of the App Client associated with your User Pool.
+   ```bash
+   npm install
+   ```
 
-    * Your final `.env` file should look like this:
-        ```dotenv
-        # Backend secret keys
-        GEMINI_API_KEY="AIzaSy...your...gemini...key"
-        AWS_COGNITO_USER_POOL_ID="ap-south-1_xxxxxxxxx"
-        
-        # Frontend public variables
-        VITE_AWS_COGNITO_USER_POOL_ID="ap-south-1_xxxxxxxxx"
-        VITE_AWS_COGNITO_APP_CLIENT_ID="xxxxxxxxxxxxxxxxxxxxxx"
-        ```
+3. **Set up environment variables:**
 
-5.  **Run the Application:**
+   Create a `.env` file in the root directory with the following variables:
 
-    You need to run the backend and frontend servers in two separate terminals.
+   ```env
+   # Google Gemini AI API Key
+   GEMINI_API_KEY="your-gemini-api-key"
 
-    * **Terminal 1: Start the backend server**
-        ```bash
-        npm run start:server
-        ```
+   # AWS Cognito Configuration
+   VITE_AWS_COGNITO_USER_POOL_ID="your-user-pool-id"
+   VITE_AWS_COGNITO_APP_CLIENT_ID="your-app-client-id"
+   VITE_AWS_REGION="your-aws-region"
+   ```
 
-    * **Terminal 2: Start the frontend dev server**
-        ```bash
-        npm run dev
-        ```
+   **Required API Keys:**
 
-    Your application should now be running. Open your browser to the local address provided by the `npm run dev` command (usually `http://localhost:5173`).
+   - **Gemini API Key**: Get from [Google AI Studio](https://aistudio.google.com/app/apikey)
+   - **AWS Cognito**: Create a User Pool in [AWS Cognito Console](https://console.aws.amazon.com/cognito/)
+
+4. **Run the development servers:**
+
+   ```bash
+   # Terminal 1: Backend server
+   npm run start:server
+
+   # Terminal 2: Frontend dev server
+   npm run dev
+   ```
+
+   The app will be available at `http://localhost:5173`
 
 📁 Project Structure
+
 ```
 ├── public/           # Static assets like favicons
 │   └── assets/       # Image assets for the app
@@ -135,12 +138,20 @@ Follow these instructions to get a copy of the project up and running on your lo
 ├── package.json      # Project dependencies and scripts
 └── README.md         # This file
 ```
----
-☁️ Deployment:
-This application is ready for deployment to platforms like Vercel, Render, or AWS Amplify Hosting.
-
-When deploying, you do not upload the `.env` file. Instead, you must configure the environment variables directly in your hosting provider's dashboard. Ensure you set all four variables (`GEMINI_API_KEY`, `AWS_COGNITO_USER_POOL_ID`, `VITE_AWS_COGNITO_USER_POOL_ID`, and `VITE_AWS_COGNITO_APP_CLIENT_ID`) in the deployment environment settings.
 
 ---
 
-*This project was created by [Kshitij Khandelwal](https://github.com/KshitijKhandelwal-Github).*
+## ☁️ Deployment
+
+The application is currently deployed on [Vercel](https://vercel.com) with all necessary environment variables configured:
+
+- `GEMINI_API_KEY` - Google Gemini AI API key
+- `VITE_AWS_COGNITO_USER_POOL_ID` - AWS Cognito User Pool ID
+- `VITE_AWS_COGNITO_APP_CLIENT_ID` - AWS Cognito App Client ID
+- `VITE_AWS_REGION` - AWS region configuration
+
+The deployment automatically handles both frontend and backend services for optimal performance.
+
+---
+
+_This project was created by [Kshitij Khandelwal](https://github.com/KshitijKhandelwal-Github/Kshitij-Khandelwal)._
